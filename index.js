@@ -1,23 +1,29 @@
 'use strict'
 
-const {parse} = require('wtf_wikipedia')
-const h = require('virtual-dom/h')
-const slugg = require('slugg')
+const parseWikitext = require('parsoid-jsapi').parse
+const HTMLParser = require('parse5/lib/parser')
+const HTMLSerializer = require('parse5/lib/serializer')
 
 const render = (wikitext) => {
-	const data = parse(wikitext)
-	const out = []
+	return parseWikitext(wikitext)
+	.then((res) => {
+		const parser = new HTMLParser()
+		const ast = parser.parse(res.out)
 
-	for (let [heading, content] of data.text) {
-		const text = content.map((chunk) => {
-			// todo: links, end of paragraph
-			return chunk.text
-		}).join(' ')
+		const htmlNode = ast.childNodes.find((n) => n.tagName === 'html')
+		const headNode = htmlNode.childNodes.find((n) => n.tagName === 'head')
 
-		out.push(h('h2', {id: slugg(heading)}, heading), text)
-	}
+		// remove `<base>` element
+		headNode.childNodes = headNode.childNodes.filter((n) => n.tagName !== 'base')
 
-	return h('main', {}, out)
+		const titleNode = headNode.childNodes.find((n) => n.tagName === 'title')
+		// todo: fill `<title>` element with page title
+
+		// todo: fix stylesheet links
+
+		const serializer = new HTMLSerializer(ast)
+		return serializer.serialize()
+	})
 }
 
 module.exports = render
