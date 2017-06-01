@@ -18,6 +18,9 @@
 		"node": ">=6"
 	},
 	"dependencies": {
+		"slugg": "^1.2.1",
+		"virtual-dom": "^2.1.1",
+		"wtf_wikipedia": "^0.8.7"
 	},
 	"devDependencies": {
 		"tape": "^4.6.3",
