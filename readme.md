@@ -18,7 +18,11 @@ npm install derhuerst/render-wikipedia-article
 ## Usage
 
 ```js
-todo
+const toHTML = require('vdom-to-html')
+const render = require('render-wikipedia-article')
+
+const html = toHTML(render(someWikitext))
+console.log(html)
 ```
 
 
